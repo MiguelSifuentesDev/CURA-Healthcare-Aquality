@@ -26,6 +26,7 @@ namespace CURA_Healthcare_Aquality
         [TearDown]
         public void TearDown()
         {
+
         }
 
         [OneTimeTearDown]
