@@ -11,6 +11,7 @@ namespace CURA_Healthcare_Aquality
         private readonly HistoryPage historyPage = new HistoryPage();
         private readonly HomePage homePage = new HomePage();
         private readonly LoginPage loginPage = new LoginPage();
+        private readonly MenuForm menuForm = new MenuForm();
         private const string mainUrl = "https://katalon-demo-cura.herokuapp.com/";
         private const string username = "John Doe";
         private const string password = "ThisIsNotAPassword";
@@ -74,6 +75,42 @@ namespace CURA_Healthcare_Aquality
             loginPage.SetPassword("password");
             loginPage.SubmitForm();
             Assert.That(loginPage.UnsuccessfulLogin, "An error message: Login failed! Please ensure the username and password are valid. Should be displayed");
+        }
+
+        [Test]
+        [Description("Verify that a logged-in user can make an appointment.")]
+        [Order(5)]
+        public void MakeAnAppoitment()
+        {
+            homePage.MakeAppointment();
+            loginPage.SetUsername(username);
+            loginPage.SetPassword(password);
+            loginPage.SubmitForm();
+
+            appointmentPage.SelectFacility("Hongkong CURA Healthcare Center");
+            appointmentPage.CheckReadmision();
+            appointmentPage.CheckMedicalProgram("Medicaid");
+            appointmentPage.SetVisitDate("20/05/2024");
+            appointmentPage.SetComment("Regular check-up");
+            appointmentPage.submitAppoitment();
+
+            Assert.That(appointmentPage.isAppoitmentBooked(), "Appointment Confirmation message should be displayed");
+        }
+
+        [Test]
+        [Description("Check if the user can view their appointment history.")]
+        [Order(6)]
+        public void VerifyAppointmentHistory()
+        {
+            homePage.MakeAppointment();
+            loginPage.SetUsername(username);
+            loginPage.SetPassword(password);
+            loginPage.SubmitForm();
+
+            menuForm.OpenMenu();
+            menuForm.NavigateToHistory();
+            Console.WriteLine(browser.CurrentUrl);
+            Assert.That(browser.CurrentUrl.Contains("history.php#history"), "The history section should be visible");
         }
     }
 }
